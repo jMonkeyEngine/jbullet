@@ -112,6 +112,15 @@ class InstrumentMethod extends MethodNode {
 					if (min.owner.equals(STACK_NAME) && min.name.equals("alloc") && min.desc.equals(STACK_ALLOC_CLASS_DESC)) {
 						AbstractInsnNode insnBefore = min.getPrevious();
 						Type type = null;
+						// Addition by gsimard (https://github.com/gsimard/jbullet):
+						// Starting with Java8, the bytecode contains the following two
+						// operations. Thus we have to skip them.
+						if (insnBefore instanceof LineNumberNode) {
+							insnBefore = insnBefore.getPrevious();
+						}
+						if (insnBefore instanceof LabelNode) {
+							insnBefore = insnBefore.getPrevious();
+						}
 						
 						if (insnBefore instanceof LdcInsnNode && ((LdcInsnNode)insnBefore).cst instanceof Type) {
 							type = (Type)((LdcInsnNode)insnBefore).cst;
